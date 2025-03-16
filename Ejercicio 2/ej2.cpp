@@ -69,7 +69,7 @@ int main(){
 // Para compilar y ejecutar
 // g++ -std=c++17 -Wall -Wextra -o "Ejercicio 2/ej2" "Ejercicio 2/ej2.cpp"
 // cd "Ejercicio 2"
-// g++ -std=c++17 -Wall -Wextra -o ej1 ej2.cpp
+// g++ -std=c++17 -Wall -Wextra -o ej2 ej2.cpp
 // ./ej2
 
 
