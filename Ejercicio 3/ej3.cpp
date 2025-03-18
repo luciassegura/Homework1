@@ -3,28 +3,28 @@
 
 using namespace std;
 
-struct node {
+struct node {                   // define la estructura del nodo que tiene un valor y un puntero a next
     void* value;
     shared_ptr<node> next;
 };
 
-struct list {
+struct list {                       // define la estructura de la lista que tiene un size, un puntero a head y otro a tail
     shared_ptr<node> head;
     weak_ptr<node> tail;
     size_t size = 0; 
 };
 
-shared_ptr<node> create_node(void* value){
+shared_ptr<node> create_node(void* value){              // crea el nodo y le asigna el valor correspondiente
     auto new_node = make_shared<node>();
     new_node -> value = value;
     return new_node;
 }
 
-void push_front(shared_ptr<list> list, void* value){
-    auto new_node = create_node(value);
-    new_node -> next = list -> head;
+void push_front(shared_ptr<list> list, void* value){   // inserta un elemento al principio
+    auto new_node = create_node(value);                // crea el nodo
+    new_node -> next = list -> head;                // asigna el next de new_node 
 
-    if (!(list -> head)){                   // si no hay elementos en la lista, el nuevo nodo también pasa a ser tail.
+    if (list -> head == nullptr){                   // si no hay elementos en la lista, el new_node también pasa a ser tail.
         list -> tail = new_node;
     }
 
@@ -32,68 +32,69 @@ void push_front(shared_ptr<list> list, void* value){
     list -> size++;
 }
 
-void push_back(shared_ptr<list> list, void* value) {
-    auto new_node = create_node(value);
+void push_back(shared_ptr<list> list, void* value){        // inserta un elemento al final
+    auto new_node = create_node(value);                    // crea el nodo
     
-    auto tail_shared = list -> tail.lock(); // convertir weak_ptr a shared_ptr
+    auto tail_shared = list -> tail.lock(); // convertir weak_ptr a shared_ptr (con .lock) mientras todavía exista 
 
-    if (!tail_shared) {  // si la lista está vacía
-        list -> head = new_node;
-        list -> tail = new_node;  // tail sigue siendo weak_ptr, pero ahora apunta a new_node
+    if (tail_shared == nullptr) {  // si la lista está vacía
+        list -> head = new_node;   // new_node es head
+        list -> tail = new_node;  // y tail que sigue siendo weak_ptr,
     } else {
-        tail_shared -> next = new_node;
+        tail_shared -> next = new_node;         // si no está vacía se agrega new_node
         list -> tail = new_node;  
     }
 
     list -> size++;
 }
 
-void insert(shared_ptr<list> list, void* value, int position){     
-    auto new_node = create_node(value);
+void insert(shared_ptr<list> list, void* value, int position){     // inserta un elemento en la posición indicada
+    auto new_node = create_node(value);                           // crea el nodo
 
-    if(position >= int(list -> size)){
+    if(position >= int(list -> size)){              // si la posición es mayor al largo de la lista, lo inserta al final
         push_back(list, value); 
         return;
     } 
-    if(position == 0){
+    if(position == 0){                              // si la posición es 0, lo inserta al principio
         push_front(list,value);
         return;
     }
 
     auto current = list -> head;
 
-    for (int i = 0; i < position - 1 && current; i++) {
+    for (int i = 0; i < position - 1 && current; i++){      // recorre la lista hasta llegar a la posición -1
         current = current -> next;
     }
-    
-    auto next_node = current -> next;
-    current -> next = new_node;
-    new_node -> next = next_node;
+                                                 // cuando está en posición -1 
+    auto next_node = current -> next;           // guardo el próximo 
+    current -> next = new_node;                 // el próximo es el nuevo
+    new_node -> next = next_node;               // actualiza el próximo del nuevo
 
-    if (!next_node) {
+    if (next_node == nullptr) {
     list -> tail = new_node;
     }
 
     list -> size++;
 }
-void erase(std::shared_ptr<list> list, int position) {
-    if (!list || list->size == 0) return;  
 
-    if (position >= int(list -> size)) {  
-        position = list -> size - 1;
+void erase(shared_ptr<list> list, int position) {           // borra el elemento de la posición indicada
+    if (list == nullptr || list -> size == 0) return;       // si la lista está vacía no hace nada
+
+    if (position >= int(list -> size)) {        // si la posición es mayor que el largo de la lista
+        position = list -> size - 1;            // actualizo la posición a la última de la lista
     }
 
-    auto current = list -> head;
+    auto current = list -> head;                
     if (position == 0) {  
         list -> head = list -> head-> next;
     } else {
-        for (int i = 0; i < position - 1 && current->next; i++) {
+        for (int i = 0; i < position - 1 && current -> next; i++) {
             current = current -> next;
         }
         auto node_to_delete = current -> next;
         current -> next = node_to_delete -> next;
 
-        if (!current -> next) { 
+        if (current -> next == nullptr) { 
             list -> tail = current;
         }
     }
@@ -101,8 +102,7 @@ void erase(std::shared_ptr<list> list, int position) {
     list -> size--;
 }
 
-
-void print_list(shared_ptr<list> list){
+void print_list(shared_ptr<list> list){                 // imprime los valores de la lista
     shared_ptr<node> current = list -> head;
     while (current) {                       
         cout << *(static_cast<int*>(current -> value)) << " -> ";         // desreferenciar el puntero para poder imprimir
@@ -111,13 +111,13 @@ void print_list(shared_ptr<list> list){
     cout << "Final\n";
 }
 
-// Ejemplos para verificwr que funcionen
+// Ejemplos para verificar 
 int main(){
     auto my_list = make_shared<list>(); // inicializar la lista
 
     int a = 10, b = 20, c = 100, d = 200, e = 300, f = 30, g = 0;
     
-    cout << "Insertando al frente:\n";
+    cout << "Insertando al principio:\n";
     push_front(my_list, &a);
     print_list(my_list);
     push_front(my_list, &b);
@@ -147,9 +147,3 @@ int main(){
 
     return 0;
 }
-
-// Para compilar y ejecutar
-// g++ -std=c++17 -Wall -Wextra -o "Ejercicio 3/ej3" "Ejercicio 3/ej3.cpp"
-// cd "Ejercicio 3"
-// g++ -std=c++17 -Wall -Wextra -o ej1 ej3.cpp
-// ./ej3
