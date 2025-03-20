@@ -5,15 +5,15 @@ using namespace std;
 // A
 
 bool comparar_texto(string texto1, string texto2){
-    if(texto1.length() != texto2.length()){
+    if(texto1.length() != texto2.length()){             // si las longitudes no son iguales, no es el mismo texto
         return false;
     }
 
-    if(texto1.empty() && texto2.empty()){
+    if(texto1.empty() && texto2.empty()){               // si no hay texto, son iguales
         return true;
     }
 
-    if(texto1[0] == texto2[0]){
+    if(texto1[0] == texto2[0]){                          // compara caracter por caracter
         return comparar_texto(texto1.substr(1), texto2.substr(1));
     }
 
@@ -25,7 +25,7 @@ bool comparar_texto(string texto1, string texto2){
 
 // C
 
-consteval bool comparar_texto2(const char* texto1, const char* texto2) {
+consteval bool comparar_texto2(const char* texto1, const char* texto2){         // con consteval se fuerza a que la comparación de los textos sea en la compilación
     if (*texto1 != *texto2){
         return false;
     }
@@ -53,7 +53,7 @@ int main() {
         cout << "Los textos no son iguales. A comparar_texto le tomó " << elapsedTime.count() << " nanosegundos." << endl;
     }
 
-    constexpr bool resultado = comparar_texto2("con un texto de al menos 64 caracteres estoy probando la funcionalidad de mi función recursiva", "con un texto de al menos 64 caracteres estoy probando la funcionalidad de mi función");
+    constexpr bool resultado = comparar_texto2("con un texto de al menos 64 caracteres estoy probando la funcionalidad de mi función recursiva",  "con un texto de al menos 64 caracteres estoy probando la funcionalidad de mi función");
 
 
     auto startTime2 = chrono::high_resolution_clock::now();
@@ -61,13 +61,12 @@ int main() {
 
     auto elapsedTime2 = chrono::duration_cast<chrono::nanoseconds>(endTime2 - startTime2);
 
-    if constexpr(resultado) {  // Evaluado en compilación
+    if constexpr(resultado) {  // evaluado en compilación
         cout << "Los textos son iguales (evaluado en compilación). A comparar_texto2 le tomó " << elapsedTime2.count() << " nanosegundos." << endl;
     } 
     else {
         cout << "Los textos no son iguales (evaluado en compilación). A comparar_texto2 le tomó " << elapsedTime2.count() << " nanosegundos." << endl;
     }
-
 
     return 0;
 }
