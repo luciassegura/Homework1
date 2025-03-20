@@ -30,7 +30,7 @@ cd "Ejercicio 3"
 
 Ejercicio 4:
 
-g++ -std=c++17 -Wall -Wextra -o "Ejercicio 4/ej4" "Ejercicio 4/ej4.cpp”
+g++ -std=c++20 -Wall -Wextra -o "Ejercicio 4/ej4" "Ejercicio 4/ej4.cpp" 
 
 cd "Ejercicio 4"
 
