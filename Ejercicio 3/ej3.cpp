@@ -4,7 +4,7 @@
 using namespace std;
 
 struct node {                   // define la estructura del nodo que tiene un valor y un puntero a next
-    void* value;
+    int value;
     shared_ptr<node> next;
 };
 
@@ -14,13 +14,13 @@ struct list {                       // define la estructura de la lista que tien
     size_t size = 0; 
 };
 
-shared_ptr<node> create_node(void* value){              // crea el nodo y le asigna el valor correspondiente
+shared_ptr<node> create_node(int value){              // crea el nodo y le asigna el valor correspondiente
     auto new_node = make_shared<node>();
     new_node -> value = value;
     return new_node;
 }
 
-void push_front(shared_ptr<list> list, void* value){   // inserta un elemento al principio
+void push_front(shared_ptr<list> list, int value){   // inserta un elemento al principio
     auto new_node = create_node(value);                // crea el nodo
     new_node -> next = list -> head;                // asigna el next de new_node 
 
@@ -32,7 +32,7 @@ void push_front(shared_ptr<list> list, void* value){   // inserta un elemento al
     list -> size++;
 }
 
-void push_back(shared_ptr<list> list, void* value){        // inserta un elemento al final
+void push_back(shared_ptr<list> list, int value){        // inserta un elemento al final
     auto new_node = create_node(value);                    // crea el nodo
     
     auto tail_shared = list -> tail.lock(); // convertir weak_ptr a shared_ptr (con .lock) mientras todavía exista 
@@ -48,7 +48,7 @@ void push_back(shared_ptr<list> list, void* value){        // inserta un element
     list -> size++;
 }
 
-void insert(shared_ptr<list> list, void* value, int position){     // inserta un elemento en la posición indicada
+void insert(shared_ptr<list> list, int value, int position){     // inserta un elemento en la posición indicada
     auto new_node = create_node(value);                           // crea el nodo
 
     if(position >= int(list -> size)){              // si la posición es mayor al largo de la lista, lo inserta al final
@@ -105,7 +105,7 @@ void erase(shared_ptr<list> list, int position) {           // borra el elemento
 void print_list(shared_ptr<list> list){                 // imprime los valores de la lista
     shared_ptr<node> current = list -> head;
     while (current) {                       
-        cout << *(static_cast<int*>(current -> value)) << " -> ";         // desreferenciar el puntero para poder imprimir
+        cout << current -> value<< " -> ";         // desreferenciar el puntero para poder imprimir
         current = current -> next;
     }
     cout << "Final\n";
@@ -118,23 +118,23 @@ int main(){
     int a = 10, b = 20, c = 100, d = 200, e = 300, f = 30, g = 0;
     
     cout << "Insertando al principio:\n";
-    push_front(my_list, &a);
+    push_front(my_list, a);
     print_list(my_list);
-    push_front(my_list, &b);
+    push_front(my_list, b);
     print_list(my_list);
 
     cout << "\nInsertando al final:\n";
-    push_back(my_list, &c);
+    push_back(my_list, c);
     print_list(my_list);
-    push_back(my_list, &d);
+    push_back(my_list, d);
     print_list(my_list);
 
     cout << "\nInsertando en la posición indicada:\n";
-    insert(my_list, &e, 10);        // la posición es mayor al largo de la lista, entonces se inserta al final 
+    insert(my_list, e, 10);        // la posición es mayor al largo de la lista, entonces se inserta al final 
     print_list(my_list);
-    insert(my_list, &f, 0);         // la posición es la primera, entonces se inserta al principio
+    insert(my_list, f, 0);         // la posición es la primera, entonces se inserta al principio
     print_list(my_list);
-    insert(my_list, &g, 3);
+    insert(my_list, g, 3);
     print_list(my_list);
 
     cout << "\nEliminando en la posición indicada:\n";
